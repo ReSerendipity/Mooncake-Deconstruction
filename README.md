@@ -1,6 +1,16 @@
-# 月饼解构实验室 · 中秋国庆 VibeCoding 参赛作品
+# 月饼解构实验室
 
-> TRAE【中秋国庆 VibeCoding】活动参赛 Demo 集。用 AI 编码（VibeCoding / TraeCode）把一个关于「中秋月饼」的想法，做成一组**零构建、单 HTML 文件**、可直接双击打开的网页交互作品。
+> 一组关于「中秋月饼内部长什么样」的网页交互作品存档——零构建、单 HTML 文件，可直接双击打开。主推 `demo-C3-月饼3D.html`：用 Three.js 把月饼沿中轴拆开，7 大门派月饼可拆解 / 剖切 / 旋转，附热量换算。
+
+## 展示
+
+![流心奶黄展开解构动图](post-assets/explode-custard-sm.gif)
+
+| 广式莲蓉蛋黄（合拢 / 展开） | 苏式枣泥（层层起酥 · 展开） |
+|---|---|
+| ![莲蓉合拢](post-assets/s00-lotus-collapsed.png) ![莲蓉展开](post-assets/s00-lotus-exploded.png) | ![苏式展开](post-assets/s06-su-exploded.png) |
+
+![莲蓉剖面视图](post-assets/s70-lotus-section.png)
 
 ## 作品一览（本仓库聚焦「月饼解构」方向）
 
@@ -30,11 +40,11 @@
 ## 目录说明
 
 - 根目录 `demo-C2/C3-*.html`：2 件月饼解构交付作品。
-- `trae-vibecoding-创意方案与去重分析.md`：活动要求提取 + 30 件作品去重聚类 + 空白区分析 + 候选方案。
-- `投稿帖-主稿.md`：论坛投稿帖正文（含素材清单），活动帖 <https://forum.trae.cn/t/topic/182046>。
+- `trae-vibecoding-创意方案与去重分析.md`：早期选题分析（活动要求提取 + 作品去重聚类 + 空白区分析）。
+- `投稿帖-主稿.md`：对外发帖草稿（如参与社区活动时使用），含素材清单。
 - `*.py` / `check_syntax.js`：上述验证 / 截图工具。
 - `addons/`、`three.module.local.js`：本地无头验证用的 Three.js 副本（交付件本身走 CDN）。
-- `post-assets/`：投稿截图与封面 GIF。
+- `post-assets/`：展示用截图与封面 GIF（本 README 引用的图片均在此目录）。
 
 ## 许可
 
