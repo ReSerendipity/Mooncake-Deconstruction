@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>月饼解构 · Mooncake Deconstructed</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root{
+    --ink:#f3ead9; --ink-dim:#a99a86; --gold:#e8c98a; --gold-2:#ffd98a;
+    --bg0:#06060a; --bg1:#12101a; --line:rgba(232,201,138,.5);
+  }
+  html,body{height:100%;}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif;
+    background:
+      radial-gradient(900px 520px at 72% 6%, rgba(255,214,140,.10), transparent 62%),
+      radial-gradient(700px 500px at 20% 92%, rgba(200,120,70,.10), transparent 60%),
+      linear-gradient(160deg,var(--bg1),var(--bg0) 60%);
+    color:var(--ink); min-height:100vh; padding:26px 16px 40px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{max-width:1080px;margin:0 auto;}
+  .hero{text-align:center;margin-bottom:6px;}
+  .kicker{font-size:12px;letter-spacing:5px;color:var(--ink-dim);text-transform:uppercase;}
+  .hero h1{
+    font-size:34px;letter-spacing:6px;margin-top:10px;font-weight:800;
+    background:linear-gradient(90deg,#fff3d6,#e8c98a 45%,#c98a4a);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero p{font-size:14px;color:var(--gold);letter-spacing:3px;margin-top:8px;}
+
+  .stage{position:relative;margin-top:4px;}
+  .stage svg{width:100%;height:auto;aspect-ratio:1000/640;display:block;}
+  .toggle{
+    position:absolute;right:14px;bottom:14px;
+    background:rgba(232,201,138,.10);border:1px solid var(--line);color:var(--gold-2);
+    padding:9px 16px;border-radius:999px;font-size:13px;letter-spacing:2px;cursor:pointer;
+    backdrop-filter:blur(4px);transition:.25s;z-index:5;
+  }
+  .toggle:hover{background:rgba(232,201,138,.22);}
+
+  .leader{stroke:var(--line);stroke-width:1.4;stroke-dasharray:2 7;stroke-linecap:round;opacity:.85;}
+  .dot{fill:var(--gold-2);}
+  .lt{fill:#f5ead6;font-size:20px;font-weight:700;letter-spacing:2px;}
+  .ld{fill:var(--ink-dim);font-size:13px;letter-spacing:1px;}
+  #llabels,#rlabels{transition:opacity .3s ease;}
+
+  .layer{transition:transform .9s cubic-bezier(.22,.61,.36,1);}
+  .stack{animation:breathe 7s ease-in-out infinite;}
+  @keyframes breathe{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .pt{animation:floaty 3.8s ease-in-out infinite alternate;}
+  @keyframes floaty{from{transform:translateY(0)}to{transform:translateY(-11px)}}
+  .glow{animation:pulse 5s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:.55}50%{opacity:.85}}
+
+  .panel{margin-top:14px;}
+  .tabs{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
+  .tab{
+    background:rgba(255,255,255,.05);border:1px solid rgba(232,201,138,.22);
+    color:var(--ink-dim);padding:9px 16px;border-radius:999px;font-size:14px;
+    cursor:pointer;transition:.22s;letter-spacing:1px;
+  }
+  .tab:hover{color:var(--ink);border-color:var(--line);}
+  .tab.on{
+    background:linear-gradient(90deg,rgba(232,201,138,.28),rgba(201,138,74,.24));
+    color:#fff6e2;border-color:var(--gold);font-weight:700;
+    box-shadow:0 0 20px rgba(232,201,138,.22);
+  }
+  .metrics{
+    display:flex;gap:30px;justify-content:center;flex-wrap:wrap;
+    margin-top:20px;padding-top:18px;border-top:1px solid rgba(232,201,138,.14);
+  }
+  .m{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-dim);letter-spacing:1px;}
+  .m b{color:var(--ink);font-weight:600;letter-spacing:2px;}
+  .dots{display:flex;gap:5px;}
+  .dots i{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.12);display:block;}
+  .dots i.on{background:radial-gradient(circle at 35% 35%,#fff2d0,#e8c98a);box-shadow:0 0 8px rgba(232,201,138,.7);}
+  .kcal b{color:var(--gold-2);font-size:16px;}
+  .foot{text-align:center;font-size:12px;color:#6f6558;margin-top:26px;letter-spacing:1px;}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="hero">
+    <div class="kicker">Mooncake Deconstructed</div>
+    <h1 id="mName">广式莲蓉蛋黄</h1>
+    <p id="mTag">经典之味 · 油润起沙</p>
+  </header>
+
+  <div class="stage">
+    <svg id="scene" viewBox="0 0 1000 640" preserveAspectRatio="xMidYMid meet" aria-label="月饼分层解构图"></svg>
+    <button class="toggle" id="toggle">展开分层</button>
+  </div>
+
+  <div class="panel">
+    <div class="tabs" id="tabs"></div>
+    <div class="metrics" id="metrics"></div>
+  </div>
+
+  <p class="foot">Demo · 纯 SVG + 滤镜质感 · 零构建单文件 · 配料为公开常识汇总，仅供活动演示</p>
+</div>
+
+<script>
+/* ============ 数据：6 种月饼（壳/馅/芯 + 配料 + 指标） ============ */
+const TYPES = [
+  { id:"lotus", name:"广式莲蓉蛋黄", tag:"经典之味 · 油润起沙", kcal:210,
+    shell:{n:"饼皮",d:"转化糖浆皮 · 回油金亮",c:"#c8873f",h:34},
+    fill: {n:"白莲蓉",d:"湘莲慢炒 · 清香绵密",c:"#efe0bd",h:56},
+    core: {n:"咸蛋黄",d:"油润起沙 · 咸香点睛",c:"#f0a52e",h:30},
+    ing:[
+      {n:"转化糖浆",d:"回油上色关键",c:"#b5651d",k:"droplet"},
+      {n:"花生油",  d:"丰润饼皮口感",c:"#e6b84a",k:"droplet"},
+      {n:"湘莲",    d:"磨蓉清香不腻",c:"#efe6cf",k:"blob"},
+      {n:"咸鸭蛋黄",d:"红心出沙",    c:"#f0932b",k:"egg"}
+    ], m:{甜:4,油润:4,细腻:5} },
+
+  { id:"five", name:"经典五仁", tag:"坚果荟萃 · 越嚼越香", kcal:200,
+    shell:{n:"饼皮",d:"薄软糖浆皮",     c:"#c8873f",h:34},
+    fill: {n:"五仁馅",d:"坚果果脯交融", c:"#b5763a",h:56},
+    core: {n:"冬瓜糖芯",d:"清甜解腻",   c:"#f0dca8",h:28},
+    ing:[
+      {n:"核桃仁",d:"油香脆爽",   c:"#c79a63",k:"nut"},
+      {n:"杏仁",  d:"清苦回甘",   c:"#e8d3a8",k:"nut"},
+      {n:"瓜子仁",d:"酥香点睛",   c:"#d9b06a",k:"nut"},
+      {n:"黑芝麻",d:"香气浓郁",   c:"#3a2f28",k:"nut"},
+      {n:"橄榄仁",d:"广式一味",   c:"#a8845a",k:"nut"}
+    ], m:{甜:3,油润:4,细腻:2} },
+
+  { id:"bean", name:"豆沙月饼", tag:"细腻沙糯 · 甜而不齁", kcal:180,
+    shell:{n:"饼皮",d:"油润糖浆皮",   c:"#c8873f",h:34},
+    fill: {n:"红豆沙",d:"慢熬去涩 · 沙糯绵密",c:"#7b3a2a",h:72},
+    ing:[
+      {n:"红小豆",d:"起沙的根本",c:"#8e3b2c",k:"blob"},
+      {n:"白砂糖",d:"甜度来源",  c:"#f2f0e6",k:"powder"},
+      {n:"植物油",d:"润泽口感",  c:"#e0b84f",k:"droplet"},
+      {n:"麦芽糖",d:"光泽延展",  c:"#c98a3a",k:"droplet"}
+    ], m:{甜:5,油润:3,细腻:5} },
+
+  { id:"custard", name:"流心奶黄", tag:"熔心爆浆 · 咸甜交融", kcal:230,
+    shell:{n:"奶黄酥皮",d:"微咸奶香 · 一碰掉渣",c:"#e0b45f",h:32},
+    fill: {n:"奶黄馅",  d:"咸甜交融 · 绵滑",   c:"#f4c542",h:56},
+    core: {n:"流心",    d:"加热熔心 · 一咬爆浆",c:"#ef8a1c",h:30},
+    ing:[
+      {n:"咸蛋黄",d:"流心灵魂",c:"#f0932b",k:"egg"},
+      {n:"淡奶油",d:"奶香绵密",c:"#f7f0df",k:"droplet"},
+      {n:"黄油",  d:"酥香光泽",c:"#f2d27a",k:"droplet"},
+      {n:"炼乳",  d:"浓缩甜香",c:"#e8c39a",k:"droplet"},
+      {n:"吉士粉",d:"奶黄定型",c:"#f0b429",k:"powder"}
+    ], m:{甜:4,油润:5,细腻:4} },
+
+  { id:"taro", name:"冰皮芋泥", tag:"糯弹冰皮 · 芋香绵密", kcal:150,
+    shell:{n:"冰皮",  d:"糯弹微透 · 冷藏更佳",c:"#ece6f0",h:34},
+    fill: {n:"芋泥",  d:"槟榔芋压泥 · 绵密",  c:"#9b7bb5",h:56},
+    core: {n:"紫薯芯",d:"天然紫 · 微甜",      c:"#7d5a9e",h:28},
+    ing:[
+      {n:"糯米粉",d:"冰皮的糯",c:"#f4f1f6",k:"powder"},
+      {n:"粘米粉",d:"弹而不粘",c:"#efe9f0",k:"powder"},
+      {n:"牛奶",  d:"奶香柔滑",c:"#fbf7ef",k:"droplet"},
+      {n:"槟榔芋",d:"绵密芋香",c:"#b7a3c9",k:"blob"},
+      {n:"紫薯",  d:"天然上色",c:"#7d5a9e",k:"blob"}
+    ], m:{甜:3,油润:1,细腻:5} },
+
+  { id:"rose", name:"玫瑰鲜花", tag:"花香清甜 · 一口春天", kcal:190,
+    shell:{n:"饼皮",  d:"薄酥糖浆皮",     c:"#c8873f",h:34},
+    fill: {n:"玫瑰馅",d:"可食用玫瑰入馅", c:"#d97a90",h:56},
+    core: {n:"花瓣芯",d:"整瓣留存 · 花香冲鼻",c:"#e8a0b4",h:28},
+    ing:[
+      {n:"玫瑰花瓣",d:"花香来源",c:"#d9556f",k:"petal"},
+      {n:"蜂蜜",    d:"清甜不腻",c:"#e8b93f",k:"droplet"},
+      {n:"白芸豆",  d:"细腻基底",c:"#efe8d6",k:"blob"},
+      {n:"麦芽糖",  d:"延展光泽",c:"#c98a3a",k:"droplet"}
+    ], m:{甜:4,油润:2,细腻:4} }
+];
+
+/* ============ 工具 ============ */
+function normHex(c){ return c.startsWith("#") ? c : "#"+c; }
+function shade(hex, p){
+  hex = normHex(hex);
+  const n = parseInt(hex.slice(1),16);
+  let r=(n>>16)&255, g=(n>>8)&255, b=n&255;
+  const f = v => p>=0 ? Math.round(v+(255-v)*p) : Math.round(v*(1+p));
+  return "#"+[f(r),f(g),f(b)].map(v=>v.toString(16).padStart(2,"0")).join("");
+}
+function ellipsePath(cx,cy,rx,ry){
+  return `M ${cx-rx},${cy} a ${rx},${ry} 0 1,0 ${2*rx},0 a ${rx},${ry} 0 1,0 ${-2*rx},0 Z`;
+}
+function annulusPath(cx,cy,rxO,rxI,ry){
+  return ellipsePath(cx,cy,rxO,ry)+" "+ellipsePath(cx,cy,rxI,ry);
+}
+function sidePath(cx,cy,rx,ry,h){
+  return `M ${cx-rx},${cy} L ${cx-rx},${cy+h} A ${rx},${ry} 0 0 0 ${cx+rx},${cy+h} L ${cx+rx},${cy} Z`;
+}
+
+/* ============ 布局 ============ */
+const CX = 470, CY = 300, R0 = 124, RY = 40;
+const r0 = 86, rCore = 32;
+const ryO = RY, ry0 = RY*r0/R0, ryC = RY*rCore/R0;
+let cur = 0, exploded = false;
+let geoLayers = [];   // {top, h, rx, ry, lift, grain, kind, name, desc, c}
+
+const FILTERS = `
+  <filter id="fCrust" x="-15%" y="-15%" width="130%" height="130%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.05 0.07" numOctaves="3" seed="7" result="n"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.55 0" result="dk"/>
+    <feComposite in="dk" in2="SourceGraphic" operator="in" result="dkc"/>
+    <feBlend in="SourceGraphic" in2="dkc" mode="multiply" result="m1"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.28 0" result="lt"/>
+    <feComposite in="lt" in2="SourceGraphic" operator="in" result="ltc"/>
+    <feBlend in="m1" in2="ltc" mode="screen"/>
+  </filter>
+  <filter id="fFill" x="-15%" y="-15%" width="130%" height="130%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.6 0.6" numOctaves="2" seed="3" result="n"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.35 0" result="dk"/>
+    <feComposite in="dk" in2="SourceGraphic" operator="in" result="dkc"/>
+    <feBlend in="SourceGraphic" in2="dkc" mode="multiply"/>
+  </filter>
+  <filter id="fYolk" x="-15%" y="-15%" width="130%" height="130%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.22 0.22" numOctaves="2" seed="14" result="n"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0" result="dk"/>
+    <feComposite in="dk" in2="SourceGraphic" operator="in" result="dkc"/>
+    <feBlend in="SourceGraphic" in2="dkc" mode="multiply" result="m1"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.22 0" result="lt"/>
+    <feComposite in="lt" in2="SourceGraphic" operator="in" result="ltc"/>
+    <feBlend in="m1" in2="ltc" mode="screen"/>
+  </filter>
+  <filter id="fSoft" x="-20%" y="-20%" width="140%" height="140%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.4 0.4" numOctaves="2" seed="9" result="n"/>
+    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.3 0" result="dk"/>
+    <feComposite in="dk" in2="SourceGraphic" operator="in" result="dkc"/>
+    <feBlend in="SourceGraphic" in2="dkc" mode="multiply"/>
+  </filter>
+  <filter id="fShadow" x="-60%" y="-60%" width="220%" height="220%">
+    <feGaussianBlur stdDeviation="9"/>
+  </filter>
+  <radialGradient id="sheen" cx="38%" cy="30%" r="62%">
+    <stop offset="0%" stop-color="rgba(255,255,255,.55)"/>
+    <stop offset="42%" stop-color="rgba(255,255,255,.12)"/>
+    <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+  </radialGradient>
+  <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="rgba(255,206,130,.30)"/>
+    <stop offset="60%" stop-color="rgba(255,180,90,.10)"/>
+    <stop offset="100%" stop-color="rgba(255,180,90,0)"/>
+  </radialGradient>
+  <radialGradient id="moon" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="rgba(255,240,205,.16)"/>
+    <stop offset="100%" stop-color="rgba(255,240,205,0)"/>
+  </radialGradient>
+  <radialGradient id="plate" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="rgba(0,0,0,.55)"/>
+    <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+  </radialGradient>`;
+
+function gradTop(id,c){
+  return `<radialGradient id="${id}" cx="42%" cy="35%" r="75%">
+    <stop offset="0%" stop-color="${shade(c,.30)}"/>
+    <stop offset="58%" stop-color="${normHex(c)}"/>
+    <stop offset="100%" stop-color="${shade(c,-.20)}"/>
+  </radialGradient>`;
+}
+function gradSide(id,c){
+  return `<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="${shade(c,-.10)}"/>
+    <stop offset="100%" stop-color="${shade(c,-.42)}"/>
+  </linearGradient>`;
+}
+
+/* 配料小插画 */
+function ingVisual(kind,c,r){
+  const col=normHex(c), dark=shade(c,-.4);
+  switch(kind){
+    case "droplet":
+      return `<path d="M0,${-r} C${r*.9},${-r*.2} ${r},${r*.4} 0,${r} C${-r},${r*.4} ${-r*.9},${-r*.2} 0,${-r} Z" fill="${col}" filter="url(#fSoft)"/>`
+           + `<ellipse cx="${-r*.3}" cy="${-r*.35}" rx="${r*.26}" ry="${r*.42}" fill="rgba(255,255,255,.5)"/>`;
+    case "blob":
+      return `<path d="M${-r},0 C${-r},${-r*.85} ${-r*.3},${-r} 0,${-r} C${r*.55},${-r} ${r},${-r*.5} ${r},0 C${r},${r*.7} ${r*.2},${r} 0,${r} C${-r*.4},${r} ${-r},${r*.6} ${-r},0 Z" fill="${col}" filter="url(#fFill)"/>`
+           + `<ellipse cx="${-r*.3}" cy="${-r*.3}" rx="${r*.28}" ry="${r*.2}" fill="rgba(255,255,255,.25)"/>`;
+    case "egg":
+      return `<path d="M${-r},0 a${r},${r*.95} 0 0 0 ${2*r},0 Z" fill="#fbf3e0"/>`
+           + `<path d="M${-r*.6},0 a${r*.6},${r*.6} 0 0 0 ${2*r*.6},0 Z" fill="${col}" filter="url(#fYolk)"/>`
+           + `<ellipse cx="${-r*.15}" cy="${-r*.18}" rx="${r*.16}" ry="${r*.22}" fill="rgba(255,255,255,.5)"/>`;
+    case "nut":
+      return `<ellipse cx="0" cy="0" rx="${r}" ry="${r*.66}" fill="${col}" filter="url(#fSoft)"/>`
+           + `<path d="M0,${-r*.55} Q${r*.42},0 0,${r*.55} M0,${-r*.55} Q${-r*.42},0 0,${r*.55}" stroke="${dark}" stroke-width="1.3" fill="none" opacity=".55"/>`
+           + `<ellipse cx="${-r*.3}" cy="${-r*.2}" rx="${r*.18}" ry="${r*.26}" fill="rgba(255,255,255,.3)"/>`;
+    case "petal":
+      return `<path d="M0,${-r} C${r*.8},${-r*.3} ${r*.55},${r*.7} 0,${r} C${-r*.55},${r*.7} ${-r*.8},${-r*.3} 0,${-r} Z" fill="${col}" filter="url(#fSoft)"/>`
+           + `<ellipse cx="0" cy="${-r*.2}" rx="${r*.18}" ry="${r*.4}" fill="rgba(255,255,255,.3)"/>`;
+    case "powder":
+      return `<path d="M${-r},${r*.55} Q0,${-r} ${r},${r*.55} Z" fill="${col}" opacity=".92" filter="url(#fSoft)"/>`;
+    default:
+      return `<circle r="${r}" fill="${col}"/>`;
+  }
+}
+
+/* ============ 渲染 ============ */
+function render(type){
+  const svg = document.getElementById("scene");
+  // 组装各层（壳/馅/芯）
+  const defs = [`<defs>`, FILTERS];
+  const parts = [];
+  const L = [type.shell, type.fill];
+  if(type.core) L.push(type.core);
+  const RX = [R0, r0, rCore];
+  const RYr = [ryO, ry0, ryC];
+  const grain = ["fCrust","fFill","fYolk"];
+  const total = L.reduce((s,x)=>s+x.h,0);
+  const yTop = CY - total/2;
+
+  // 计算每层几何与剥离位移
+  geoLayers = [];
+  let acc = 0;
+  L.forEach((ly,i)=>{
+    const lift = i===0 ? 0 : (acc + 12);
+    geoLayers.push({ top:yTop, h:ly.h, rx:RX[i], ry:RYr[i], lift,
+      grain:grain[i], name:ly.n, desc:ly.d, c:ly.c });
+    acc += ly.h;
+  });
+
+  // 渐变定义
+  L.forEach((ly,i)=>{
+    defs.push(gradTop("gt"+i, ly.c));
+    defs.push(gradSide("gs"+i, ly.c));
+  });
+  defs.push(`</defs>`);
+
+  // 背景
+  const bg = `
+    <circle cx="848" cy="96" r="120" fill="url(#moon)"/>
+    <circle class="glow" cx="${CX}" cy="${CY}" r="260" fill="url(#glow)"/>
+    <ellipse cx="${CX}" cy="${yTop+total+46}" rx="172" ry="30" fill="url(#plate)"/>`;
+
+  // 中央月饼（每层一个 group）
+  let stack = `<g class="stack">`;
+  // 先画最底层（壳），再馅，再芯 —— 顺序保证同心时壳在底、芯在顶
+  L.forEach((ly,i)=>{
+    const g = geoLayers[i];
+    const cx = CX, cy = g.top;
+    let body = "";
+    // 投影
+    body += `<ellipse cx="${cx}" cy="${cy+g.h+8}" rx="${g.rx*.92}" ry="${g.ry*.55}" fill="rgba(0,0,0,.4)" filter="url(#fShadow)"/>`;
+    if(i===0){
+      // 壳 = 环
+      const topA = annulusPath(cx,cy,R0,r0,ryO);
+      const sideW = sidePath(cx,cy,R0,ryO,ly.h);
+      body += `<path d="${sideW}" fill="url(#gs0)" filter="url(#fCrust)" opacity=".97"/>`;
+      body += `<path d="${topA}" fill-rule="evenodd" fill="url(#gt0)" filter="url(#fCrust)"/>`;
+      body += `<path d="${topA}" fill-rule="evenodd" fill="url(#sheen)" opacity=".22"/>`;
+      body += `<ellipse cx="${cx}" cy="${cy}" rx="${r0}" ry="${ry0}" fill="none" stroke="${shade(ly.c,-.35)}" stroke-width="2" opacity=".5"/>`;
+    } else {
+      const topE = ellipsePath(cx,cy,g.rx,g.ry);
+      const sideW = sidePath(cx,cy,g.rx,g.ry,ly.h);
+      body += `<path d="${sideW}" fill="url(#gs${i})" filter="url(#${g.grain})" opacity=".97"/>`;
+      body += `<ellipse cx="${cx}" cy="${cy}" rx="${g.rx}" ry="${g.ry}" fill="url(#gt${i})" filter="url(#${g.grain})"/>`;
+      body += `<ellipse cx="${cx}" cy="${cy}" rx="${g.rx}" ry="${g.ry}" fill="url(#sheen)" opacity=".28"/>`;
+      if(i===2){ // 芯：油光 + 深边 + 胚心
+        body += `<ellipse cx="${cx-g.rx*.28}" cy="${cy-g.ry*.3}" rx="${g.rx*.3}" ry="${g.ry*.36}" fill="rgba(255,255,255,.5)"/>`;
+        body += `<ellipse cx="${cx}" cy="${cy}" rx="${g.rx*.22}" ry="${g.ry*.26}" fill="${shade(ly.c,.18)}" opacity=".5"/>`;
+        body += `<ellipse cx="${cx}" cy="${cy}" rx="${g.rx}" ry="${g.ry}" fill="none" stroke="${shade(ly.c,-.45)}" stroke-width="1.6" opacity=".45"/>`;
+      }
+    }
+    stack += `<g class="layer" data-i="${i}">${body}</g>`;
+  });
+  stack += `</g>`;
+
+  // 配料粒子（右侧竖列）
+  let particles = `<g class="particles">`;
+  const n = type.ing.length;
+  const rL = [];
+  type.ing.forEach((g,i)=>{
+    const py = n>1 ? 128 + i*(392/(n-1)) : CY;
+    const px = 650 + (i%2 ? 26 : 0);
+    rL.push({y:py});
+    particles += `<g class="pt" style="animation-delay:${(i*0.4).toFixed(2)}s" transform="translate(${px},${py})">
+        <circle r="30" fill="${shade(g.c,-.5)}" opacity=".35"/>
+        <g transform="scale(1.05)">${ingVisual(g.k, g.c, 16)}</g>
+      </g>`;
+  });
+  particles += `</g>`;
+
+  svg.innerHTML = defs.join("") + bg + stack + particles
+    + `<g id="llabels"></g><g id="rlabels"></g>`;
+
+  // 右标签（静态）
+  let rl = "";
+  rL.forEach((l,i)=>{
+    const dotX = 650 + (i%2?26:0) + 19, dotY = l.y;
+    rl += `<line class="leader" x1="742" y1="${l.y}" x2="${dotX}" y2="${dotY}"/>`
+        + `<circle class="dot" cx="${dotX}" cy="${dotY}" r="3.6"/>`
+        + `<text class="lt" x="752" y="${l.y-2}">${type.ing[i].n}</text>`
+        + `<text class="ld" x="752" y="${l.y+17}">${type.ing[i].d}</text>`;
+  });
+  document.getElementById("rlabels").innerHTML = rl;
+
+  drawLLabels();
+  applyExplode(false);
+  setStagger();
+
+  document.getElementById("mName").textContent = type.name;
+  document.getElementById("mTag").textContent = type.tag;
+  renderMetrics(type);
+}
+
+function drawLLabels(){
+  const type = TYPES[cur];
+  const n = type.core ? 3 : 2;
+  const total = geoLayers.reduce((s,g)=>s+g.h,0);
+  const yTop = geoLayers[0].top;
+  let html = "";
+  geoLayers.forEach((g,i)=>{
+    const ly = exploded
+      ? (g.top - g.lift + g.h/2)
+      : (yTop + total*(i+0.5)/n);
+    const dotX = exploded ? (CX - g.rx - 8) : (CX - R0 - 8);
+    const dotY = ly;
+    html += `<line class="leader" x1="214" y1="${ly}" x2="${dotX}" y2="${dotY}"/>`
+          + `<circle class="dot" cx="${dotX}" cy="${dotY}" r="3.6"/>`
+          + `<text class="lt" x="206" y="${ly-2}" text-anchor="end">${g.name}</text>`
+          + `<text class="ld" x="206" y="${ly+17}" text-anchor="end">${g.desc}</text>`;
+  });
+  document.getElementById("llabels").innerHTML = html;
+}
+
+function applyExplode(){
+  geoLayers.forEach((g,i)=>{
+    const el = document.querySelector(`#scene .layer[data-i="${i}"]`);
+    if(el) el.style.transform = `translateY(${-g.lift*(exploded?1:0)}px)`;
+  });
+}
+
+function setExploded(v){
+  exploded = v;
+  applyExplode();
+  // 错峰：各层延迟由 CSS transition-delay 控制
+  const lg = document.getElementById("llabels");
+  lg.style.opacity = 0;
+  setTimeout(()=>{ drawLLabels(); lg.style.opacity = 1; }, 280);
+  document.getElementById("toggle").textContent = exploded ? "合拢月饼" : "展开分层";
+}
+
+function renderMetrics(type){
+  const box = document.getElementById("metrics");
+  let html = "";
+  Object.keys(type.m).forEach(k=>{
+    const v = type.m[k];
+    let ds = "";
+    for(let i=1;i<=5;i++) ds += `<i class="${i<=v?'on':''}"></i>`;
+    html += `<div class="m"><b>${k}</b><span class="dots">${ds}</span></div>`;
+  });
+  html += `<div class="m kcal">每块(≈50g) 约 <b>${type.kcal}</b> kcal</div>`;
+  box.innerHTML = html;
+}
+
+function renderTabs(){
+  const box = document.getElementById("tabs");
+  box.innerHTML = "";
+  TYPES.forEach((t,i)=>{
+    const b = document.createElement("button");
+    b.className = "tab" + (i===cur ? " on" : "");
+    b.textContent = t.name;
+    b.onclick = ()=>{ cur = i; renderTabs(); render(TYPES[cur]); };
+    box.appendChild(b);
+  });
+}
+
+// 错峰缓动延迟
+function setStagger(){
+  document.querySelectorAll("#scene .layer").forEach((el,i)=>{
+    el.style.transitionDelay = (i*0.07)+"s";
+  });
+}
+
+document.getElementById("toggle").onclick = ()=> setExploded(!exploded);
+renderTabs();
+render(TYPES[cur]);
+setStagger();
+</script>
+</body>
+</html>

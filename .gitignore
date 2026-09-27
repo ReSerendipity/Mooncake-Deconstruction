@@ -1,0 +1,33 @@
+# ===== 本地验证生成的临时产物（可由脚本重新生成，不入库） =====
+_verify-c3.html
+_min.html
+_min_cdn.html
+_min_local.html
+_check.js
+_sobel_equiv.js
+_sobel_probe.py
+_probe.py
+_diff_shots.py
+_min_shot.py
+
+# ===== 交付件的历史备份（保留在本地即可） =====
+*.bak-*.html
+
+# ===== 日志与调试输出 =====
+*.log
+_ref/
+
+# ===== 中间过程截图（精选图已收录在 post-assets/） =====
+_shots-baseline-2138/
+_shots-beforewall/
+_shots-progress/
+*.png
+!post-assets/*.png
+!post-assets/**/*.png
+
+# ===== WorkBuddy 项目私有记忆（含个人笔记，勿公开） =====
+.workbuddy/
+
+# ===== 已放弃的其它探索方向（仅本地留存，不进入本仓库） =====
+demo-A-谜趣中秋.html
+demo-C-轻食中秋.html
