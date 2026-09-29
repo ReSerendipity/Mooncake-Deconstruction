@@ -22,10 +22,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Check demo-C2-月饼解构.html
-        run: node check_syntax.js demo-C2-月饼解构.html
-      - name: Check demo-C3-月饼3D.html
-        run: node check_syntax.js demo-C3-月饼3D.html
+      - name: Check all demo inline scripts (regular + module)
+        run: node tools/check_html_scripts.js demo-C2-月饼解构.html demo-C3-月饼3D.html
 
   integrity:
     name: Static asset integrity
