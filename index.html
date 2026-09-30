@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="月饼解构实验室：探索不同月饼的分层与剖面。">
+  <title>月饼解构实验室</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: #100e16;
+      color: #f3ead9;
+    }
+    body {
+      box-sizing: border-box;
+      display: grid;
+      min-height: 100vh;
+      margin: 0;
+      padding: 24px;
+      place-items: center;
+    }
+    main {
+      width: min(100%, 560px);
+      text-align: center;
+    }
+    h1 { color: #e8c98a; letter-spacing: .12em; }
+    p { color: #b7aa98; line-height: 1.8; }
+    nav { display: grid; gap: 12px; margin-top: 28px; }
+    a {
+      border: 1px solid #786345;
+      border-radius: 12px;
+      color: #f3ead9;
+      padding: 16px;
+      text-decoration: none;
+    }
+    a:hover, a:focus-visible { background: #292218; border-color: #e8c98a; }
+    small { display: block; color: #b7aa98; margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>月饼解构实验室</h1>
+    <p>沿着月饼的层次，探索七种风味与结构。</p>
+    <nav aria-label="选择演示">
+      <a href="demo-C3-月饼3D.html">
+        进入 3D 解构实验室
+        <small>旋转、拆解与查看月饼剖面</small>
+      </a>
+      <a href="demo-C2-月饼解构.html">
+        查看 SVG 解构图
+        <small>无需加载 3D 资源的插画版本</small>
+      </a>
+    </nav>
+  </main>
+</body>
+</html>
