@@ -25,6 +25,7 @@
 
 ## 快速体验
 
+- **在线体验**：<https://reserendipity.github.io/Mooncake-Deconstruction/>（GitHub Pages，零安装；Demo 需联网加载 Three.js CDN）。
 - **直接打开**：双击 `demo-C3-月饼3D.html`（需联网加载 Three.js CDN），推荐 Chrome / Edge。
 - 操作：底部切换 7 种月饼 → 拖拽旋转 / 滚轮缩放 → 「解构展开」看分层 → 「剖面视图」看切面。
 
@@ -37,6 +38,7 @@
 3. 起本地服务 `python -m http.server 8931`，再用 `python _verify_run.py "http://127.0.0.1:8931/_verify-c3.html?static=1&verifyall=1"` 跑 `?verifyall=1` 全量断言：**7 类型 × 合拢 / 展开 14 组状态，各层不越出视口、内芯不穿透外壳**，无头浏览器 14/14 通过。
 4. `python _perf_test.py` / `python _regress.py` —— 交互空转冒烟 / 静态帧 PIL 比色回归。
 
+> 依赖安装：`pip install -r requirements.txt && python -m playwright install chromium`。
 > 一键跑通第 2–3 步：`python verify.py`（默认端口 8931，`--port` 可换；断言全过退出码 0，否则 1）。
 
 ## 目录说明
@@ -53,4 +55,4 @@
 
 ## 许可
 
-Apache License 2.0 —— 见 `LICENSE`。
+Apache License 2.0 —— 见 `LICENSE`。Copyright 2026 ReSerendipity。
