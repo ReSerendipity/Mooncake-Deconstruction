@@ -1,5 +1,5 @@
 # 无头验证工具链的 Python 依赖（_verify_run.py / _regress.py / _perf_test.py / *_shots*.py）
 # 固定版本以保证跨机可复现。装完还需要下载浏览器内核：
 #   pip install -r requirements.txt && python -m playwright install chromium
-playwright==1.48.0
+playwright==1.63.0
 Pillow==10.4.0
