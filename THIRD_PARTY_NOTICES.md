@@ -4,7 +4,11 @@
 
 文中「逐字节相同」= 两侧文件的 git blob SHA 相等（SHA 按内容寻址，相等即字节相等）。
 
-登记对象：`Mooncake-Deconstruction @ ef01d991658717513fd105f5ace084d833e110f3`
+登记基准：`Mooncake-Deconstruction @ ef01d991658717513fd105f5ace084d833e110f3`（该 ref 共 48 个 blob）——下文所有「逐字节相同」的比对与体积数字都是在这份文件树上做的。
+
+台账复核：当前 `main` tip 为 `a6c941e6697b3aac206a09c5c47bff1355a66da7`（49 个 blob）。`compare/ef01d99…a6c941e` 的差集只有本文件自身，因此上述比对对象在当前 tip 上字节未变，无需重验。
+
+最后核验日期：2026-10-12（`git/trees?recursive=1` 复算 blob 数与 `post-assets/` 文件数，`truncated=false`）。
 
 ---
 
@@ -109,7 +113,7 @@ THE SOFTWARE.
 
 | 素材 | 来源 | 状态 |
 |---|---|---|
-| `post-assets/*.png`（17 张）、`explode-custard*.gif`（2 个） | 自产展示截图与封面 | 随本仓 Apache-2.0 分发；仅作展示，可替换重拍 |
+| `post-assets/` 18 个文件（16 张 `.png` + 2 个 `.gif`：`explode-custard.gif`、`explode-custard-sm.gif`） | 自产展示截图与封面 | 随本仓 Apache-2.0 分发；仅作展示，可替换重拍 |
 | 程序化月饼纹样（回纹 / 卷草 / 祥云 / 中心开光汉印） | 代码内程序化生成，非位图素材 | 自产 |
 | 字体 | 仓内**无自带字体文件**，页面使用系统字体 | 不涉及分发 |
 | `demo-C3-月饼3D.html:137-138` 内嵌 base64 顶面贴图 | **出处未记录**：注释自述"由真实广式月饼俯拍照片处理而来"，原照片的拍摄者与授权均无记录 | **UNKNOWN**，见下 |
