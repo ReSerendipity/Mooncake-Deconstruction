@@ -1,4 +1,4 @@
-import sys, time
+import sys, time, os
 from playwright.sync_api import sync_playwright
 
 url, out = sys.argv[1], sys.argv[2]
@@ -42,4 +42,5 @@ with sync_playwright() as p:
     pg.wait_for_timeout(900)
     pg.screenshot(path=out, timeout=40000)
     log("SHOT done in %.1fs" % (time.time()-t0))
-    b.close()
+    # never b.close() under swiftshader — it hangs; just exit the process
+    os._exit(0)
