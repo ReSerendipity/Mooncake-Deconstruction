@@ -84,7 +84,7 @@
 ## 7. 发布前检查清单
 
 - [ ] 版本位全部同步（见 §1 清单）——当前无版本位，N/A
-- [ ] CHANGELOG `[Unreleased]` 已改版本 + 日期——CHANGELOG 未建立，见 §2
+- [ ] CHANGELOG `[Unreleased]` 已改版本 + 日期（见 §2）
 - [ ] `node tools/check_html_scripts.js demo-C2-月饼解构.html demo-C3-月饼3D.html` 通过（CI `syntax` 作业）
 - [ ] CI `integrity` 作业通过（demo 文件 / `three.module.local.js` / `README.md` 存在非空）
 - [ ] 镜像类仓：Trivy 阻断通过，豁免已在 `.trivyignore.yaml` 登记理由 + expiration——本仓无镜像，N/A
