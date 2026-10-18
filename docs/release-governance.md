@@ -25,7 +25,7 @@
 - 遵循 **Keep a Changelog**：`Added / Changed / Fixed / Deprecated / Removed / Security`。
 - 每次合并 `main` 在 `[Unreleased]` 追加；type 映射 `feat→Added`、`fix→Fixed`、`refactor→Changed`。
 - 发版时 `[Unreleased]` → `[VERSION] - YYYY-MM-DD`。
-- **现状说明**：本仓尚未建立 `CHANGELOG.md`（收敛核验脚本据此报 FAIL，属 §10.6 已登记的欠账，非本工单引入）。CHANGELOG 落地**待定（负责人 + 触发条件）**；在落地前，仓库历史以 git commit 与 PR 记录为准。
+- **现状说明**：本仓已建立根级 `CHANGELOG.md`（2026-10-18 随 `ci/changelog` PR 落地，原 §10.6 欠账随之消除）。当前尚无 tag / Release，版本化发布尚未建立，`[Unreleased]` 按 Keep a Changelog 维护；首个版本号与发版日期仍待定（见 §1）。
 
 ## 3. 发布流程（远端）
 
@@ -84,7 +84,7 @@
 ## 7. 发布前检查清单
 
 - [ ] 版本位全部同步（见 §1 清单）——当前无版本位，N/A
-- [ ] CHANGELOG `[Unreleased]` 已改版本 + 日期——CHANGELOG 未建立，见 §2
+- [ ] CHANGELOG `[Unreleased]` 已改版本 + 日期（见 §2）
 - [ ] `node tools/check_html_scripts.js demo-C2-月饼解构.html demo-C3-月饼3D.html` 通过（CI `syntax` 作业）
 - [ ] CI `integrity` 作业通过（demo 文件 / `three.module.local.js` / `README.md` 存在非空）
 - [ ] 镜像类仓：Trivy 阻断通过，豁免已在 `.trivyignore.yaml` 登记理由 + expiration——本仓无镜像，N/A
