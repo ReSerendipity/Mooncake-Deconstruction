@@ -25,7 +25,7 @@
 - 遵循 **Keep a Changelog**：`Added / Changed / Fixed / Deprecated / Removed / Security`。
 - 每次合并 `main` 在 `[Unreleased]` 追加；type 映射 `feat→Added`、`fix→Fixed`、`refactor→Changed`。
 - 发版时 `[Unreleased]` → `[VERSION] - YYYY-MM-DD`。
-- **现状说明**：本仓尚未建立 `CHANGELOG.md`（收敛核验脚本据此报 FAIL，属 §10.6 已登记的欠账，非本工单引入）。CHANGELOG 落地**待定（负责人 + 触发条件）**；在落地前，仓库历史以 git commit 与 PR 记录为准。
+- **现状说明**：本仓已建立根级 `CHANGELOG.md`（2026-10-18 随 `ci/changelog` PR 落地，原 §10.6 欠账随之消除）。当前尚无 tag / Release，版本化发布尚未建立，`[Unreleased]` 按 Keep a Changelog 维护；首个版本号与发版日期仍待定（见 §1）。
 
 ## 3. 发布流程（远端）
 
