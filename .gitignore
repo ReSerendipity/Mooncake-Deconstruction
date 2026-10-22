@@ -31,3 +31,6 @@ _shots-progress/
 # ===== 已放弃的其它探索方向（仅本地留存，不进入本仓库） =====
 demo-A-谜趣中秋.html
 demo-C-轻食中秋.html
+AGENTS.md
+!/AGENTS.md
+/local/
